@@ -11,9 +11,9 @@ pub struct Scylla {
 }
 
 impl DB<Scylla> for Scylla {
-    async fn connect(port: u16) -> Self {
+    async fn connect(host: String, port: u16) -> Self {
         let session = SessionBuilder::new()
-            .known_node(format!("172.21.0.1:{}", port))
+            .known_node(format!("{}:{}", host, port))
             .build()
             .await
             .unwrap();
@@ -22,24 +22,7 @@ impl DB<Scylla> for Scylla {
     }
 
     async fn migrate(&self) -> Result<(), Box<dyn Error>> {
-        self.db
-            .query(
-                "
-            CREATE TABLE IF NOT EXISTS idk.users (
-                id uuid,
-                name varchar,
-
-                primary key (id)
-            )
-            ",
-                &[],
-            )
-            .await
-            .map_err(|e| error!("{}", e));
-
-        let result = self.db.query("SELECT * FROM idk", &[]).await?;
-
-        info!("insert: {:#?}", result);
+        self.create_users_table().await?;
 
         Ok(())
     }
@@ -57,7 +40,28 @@ impl Scylla {
             )
             .await?;
 
-        info!("prepared keyspace");
+        info!("✅️ Keyspace `idk` prepared");
+
+        Ok(())
+    }
+
+    pub async fn create_users_table(&self) -> Result<(), Box<dyn Error>> {
+        let _ = self.db
+            .query(
+                "
+                CREATE TABLE IF NOT EXISTS idk.users (
+                    id uuid,
+                    name varchar,
+
+                    primary key (id)
+                )
+            ",
+                &[],
+            )
+            .await
+            .map_err(|e| error!("e: {:#?}", e));
+
+        info!("✅️ Users table migrated");
 
         Ok(())
     }

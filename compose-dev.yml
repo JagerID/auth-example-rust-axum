@@ -5,46 +5,49 @@ services:
     container_name: scylla-node-1
     image: "scylladb/scylla"
     hostname: scylla-node-1
-    command: --smp 1 --memory 750M
+    command: --seeds=scylla-node-1,scylla-node-2 --smp 2 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
     # ports:
     #   - "9042:9042"
-    # volumes:
-    #   - "./config/scylla.yaml:/etc/scylla/scylla.yaml"
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties"
     restart: always
-    # networks:
-    #   vnet:
+    networks:
+      vnet:
 
   scylla-node-2:
     container_name: scylla-node-2
     image: "scylladb/scylla"
     hostname: scylla-node-2
-    command: --seeds=scylla-node-1 --smp 1 --memory 750M
+    command: --seeds=scylla-node-1,scylla-node-2 --smp 2 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
     # ports:
     #   - "9043:9042"
-    # volumes:
-    #   - "./config/scylla.yaml:/etc/scylla/scylla.yaml"
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties"
     restart: always
     depends_on:
       - scylla-node-1
-    # networks:
-    #   vnet:
+    networks:
+      vnet:
 
   scylla-node-3:
     container_name: scylla-node-3
     image: "scylladb/scylla"
     hostname: scylla-node-3
-    command: --seeds=scylla-node-1 --smp 1 --memory 750M
+    command: --seeds=scylla-node-1,scylla-node-2 --smp 2 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
     # ports:
     #   - "9044:9042"
-    # volumes:
-    #   - "./config/scylla.yaml:/etc/scylla/scylla.yaml"
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties:/etc/scylla/cassandra-rackdc.properties"
     restart: always
     depends_on:
       - scylla-node-1
       - scylla-node-2
-    # networks:
-    #   vnet:
+    networks:
+      vnet:
 
-# networks:
-#   vnet:
-#     driver: bridge
+networks:
+  vnet:
+    driver: bridge

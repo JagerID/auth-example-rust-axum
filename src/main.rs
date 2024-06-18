@@ -13,10 +13,13 @@ async fn main() {
 
     let env = load_env();
 
-    let scylla = Scylla::connect(env.scylla_port).await;
+    let scylla = Scylla::connect(env.scylla_host, env.scylla_port).await;
     info!("SCYLLA: {:#?}", scylla);
     let _ = scylla.prepare_keyspace().await;
     let _ = scylla.migrate().await;
+
+    let res = scylla.db.query("SELECT * FROM idk.users", &[]).await;
+    info!("res: {:#?}", res);
 
     let app = app().await;
 
