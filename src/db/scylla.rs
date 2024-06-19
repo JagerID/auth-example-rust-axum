@@ -10,11 +10,8 @@ pub struct Scylla {
 }
 
 impl Scylla {
-    pub async fn connect(host: &String, port: &u16) -> Result<Self, NewSessionError> {
-        let session = SessionBuilder::new()
-            .known_node(format!("{}:{}", host, port))
-            .build()
-            .await?;
+    pub async fn connect(nodes: &Vec<String>) -> Result<Self, NewSessionError> {
+        let session = SessionBuilder::new().known_nodes(nodes).build().await?;
 
         Ok(Self { db: session })
     }
@@ -49,9 +46,10 @@ impl Scylla {
                 "
                 CREATE TABLE IF NOT EXISTS idk.users (
                     id uuid,
+                    email varchar,
                     name varchar,
 
-                    primary key (id)
+                    primary key (id, email)
                 )
             ",
                 &[],

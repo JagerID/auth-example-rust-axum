@@ -1,10 +1,13 @@
-use crate::{config::env::Env, db::scylla::Scylla};
+use scylla::Session;
 
+use crate::config::env::Env;
+
+#[derive(Debug)]
 pub struct AppState {
-    pub db: Scylla,
+    pub db: Session,
     pub env: Env,
 }
 
-pub fn app_state(db: Scylla, env: Env) -> AppState {
+pub fn app_state(db: Session, env: Env) -> AppState {
     AppState { db, env }
 }
