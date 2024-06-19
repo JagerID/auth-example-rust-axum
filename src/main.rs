@@ -1,25 +1,22 @@
 use app::app;
 use config::{env::load_env, tracing::init_tracing};
-use db::{scylla::Scylla, DB};
-use tracing::info;
+use db::scylla::Scylla;
+use state::app_state;
+use std::error::Error;
 
 mod app;
 mod config;
 mod db;
+mod state;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>> {
     init_tracing();
 
     let env = load_env();
 
-    let scylla = Scylla::connect(env.scylla_host, env.scylla_port).await;
-    info!("SCYLLA: {:#?}", scylla);
-    let _ = scylla.prepare_keyspace().await;
-    let _ = scylla.migrate().await;
-
-    let res = scylla.db.query("SELECT * FROM idk.users", &[]).await;
-    info!("res: {:#?}", res);
+    let scylla = Scylla::connect(&env.scylla_host, &env.scylla_port).await?;
+    scylla.migrate().await?;
 
     let app = app().await;
 
@@ -27,5 +24,9 @@ async fn main() {
         .await
         .unwrap();
 
+    app_state(scylla, env);
+
     axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }

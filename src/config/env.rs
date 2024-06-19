@@ -13,7 +13,7 @@ fn default_scylla_host() -> String {
     "172.21.0.2".to_string()
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Env {
     #[serde(default = "default_port")]
     pub port: u16,
