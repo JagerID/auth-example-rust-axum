@@ -16,7 +16,13 @@ pub struct CreateUserDto {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema, FromRow)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, FromRow, Validate)]
+pub struct UpdateUserDto {
+    #[validate(length(min = 1, message = "Name required"))]
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct FilteredUser {
     pub id: uuid::Uuid,
     pub name: String,

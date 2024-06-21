@@ -1,10 +1,11 @@
 use std::sync::Arc;
 
 use axum::{extract::{Path, State}, Json};
+use validator::Validate;
 
 use crate::{state::AppState, web::error::ApiError};
 
-use super::{dto::FilteredUser, service, utils::{filter_user, filter_users}};
+use super::{dto::{FilteredUser, UpdateUserDto}, service, utils::{filter_user, filter_users}};
 
 const API_TAG: &str = "Users";
 
@@ -47,6 +48,40 @@ pub async fn get_users(
 ) -> Result<Json<Vec<FilteredUser>>, ApiError> {
     match service::get_users(&state.db).await {
         Ok(users) => Ok(Json(filter_users(&users))),
+        Err(error) => Err(error),
+    }
+}
+
+#[utoipa::path(
+    patch,
+    path = "/api/v1/users/{id}",
+    tag = API_TAG,
+
+    params(
+        ("id" = uuid::Uuid, Path, description = "User id")
+    ),
+
+    request_body = UpdateUserDto,
+
+    responses(
+        (status = 200, description = "Successfully update user", body = FilteredUser),
+        (status = 400, description = "bad_request"),
+        (status = 404, description = "users.user_not_found"),
+        (status = 500, description = "app.internal_server_error")
+    ),
+)]
+pub async fn update_user(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<uuid::Uuid>,
+    Json(body): Json<UpdateUserDto>,
+) -> Result<Json<FilteredUser>, ApiError> {
+    match body.validate() {
+        Ok(_) => (),
+        Err(_) => return Err(ApiError::BodyParsingError("Cannot parse body".to_owned())),
+    };
+
+    match service::update_user(&state.db, id, body).await {
+        Ok(updated_user) => Ok(Json(filter_user(&updated_user))),
         Err(error) => Err(error),
     }
 }

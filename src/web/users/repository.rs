@@ -1,29 +1,34 @@
+use sqlx::postgres::PgQueryResult;
+
 use crate::{db::postgres::PostgresPool, web::error::ApiError};
 
-use super::model::User;
+use super::{
+    dto::{CreateUserDto, UpdateUserDto},
+    model::User,
+};
 
-// pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
-//     sqlx::query_as!(
-//         User,
-//         r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
-//         body.email.to_owned(),
-//         body.name.to_owned(),
-//         body.password.to_owned(),
-//         "USER"
-//     )
-//     .fetch_one(db)
-//     .await
-//     .map_err(|e| match e {
-//         sqlx::Error::Database(error) => {
-//             if error.code().unwrap() == "23505" {
-//                 ApiError::UserAlreadyExists
-//             } else {
-//                 ApiError::InternalServerError
-//             }
-//         }
-//         _ => ApiError::InternalServerError,
-//     })
-// }
+pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
+    sqlx::query_as!(
+        User,
+        r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
+        body.email.to_owned(),
+        body.name.to_owned(),
+        body.password.to_owned(),
+        "USER"
+    )
+    .fetch_one(db)
+    .await
+    .map_err(|e| match e {
+        sqlx::Error::Database(error) => {
+            if error.code().unwrap() == "23505" {
+                ApiError::UserAlreadyExists
+            } else {
+                ApiError::InternalServerError
+            }
+        }
+        _ => ApiError::InternalServerError,
+    })
+}
 
 pub async fn get_users(db: &PostgresPool) -> Result<Vec<User>, ApiError> {
     sqlx::query_as("SELECT * FROM users")
@@ -52,18 +57,18 @@ pub async fn get_user_by_email(db: &PostgresPool, email: String) -> Result<User,
         })
 }
 
-// pub async fn update_user(
-//     db: &PostgresPool,
-//     id: uuid::Uuid,
-//     body: UpdateUserDto,
-// ) -> Result<PgQueryResult, ApiError> {
-//     sqlx::query(r#"UPDATE users SET name = $1 WHERE id = $2"#)
-//         .bind(body.name.unwrap())
-//         .bind(id)
-//         .execute(db)
-//         .await
-//         .map_err(|_| ApiError::InternalServerError)
-// }
+pub async fn update_user(
+    db: &PostgresPool,
+    id: uuid::Uuid,
+    body: UpdateUserDto,
+) -> Result<PgQueryResult, ApiError> {
+    sqlx::query(r#"UPDATE users SET name = $1 WHERE id = $2"#)
+        .bind(body.name)
+        .bind(id)
+        .execute(db)
+        .await
+        .map_err(|_| ApiError::InternalServerError)
+}
 
 // pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
 //     sqlx::query(r#"DELETE FROM users WHERE id = $1"#)
