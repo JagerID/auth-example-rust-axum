@@ -11,6 +11,10 @@ pub struct Env {
     pub port: u16,
 
     pub database_url: String,
+
+    pub jwt_secret: String,
+    pub jwt_token_exp: i64,
+    pub jwt_refresh_exp: i64,
 }
 
 pub fn load_env() -> Env {
@@ -18,8 +22,8 @@ pub fn load_env() -> Env {
 
     match envy::from_env::<Env>() {
         Ok(env) => env,
-        Err(err) => {
-            error!("{:#?}", err);
+        Err(error) => {
+            error!("{:#?}", error);
             std::process::exit(1);
         }
     }

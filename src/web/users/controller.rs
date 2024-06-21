@@ -11,7 +11,7 @@ const API_TAG: &str = "Users";
 
 #[utoipa::path(
     get,
-    path = "/api/v1/users/{id}",
+    path = "/api/users/{id}",
     tag = API_TAG,
     
     params(
@@ -32,14 +32,14 @@ pub async fn get_user_by_id(
 ) -> Result<Json<FilteredUser>, ApiError> {
     match service::get_user_by_id(&state.db, id).await {
         Ok(user) => Ok(Json(filter_user(&user))),
-        Err(err) => Err(err)
+        Err(error) => Err(error)
     }
 }
 
 
 #[utoipa::path(
     get,
-    path = "/api/v1/users",
+    path = "/api/users",
     tag = API_TAG,
 
     responses(
@@ -62,7 +62,7 @@ pub async fn get_users(
 
 #[utoipa::path(
     patch,
-    path = "/api/v1/users/{id}",
+    path = "/api/users/{id}",
     tag = API_TAG,
 
     params(
@@ -97,18 +97,3 @@ pub async fn update_user(
         Err(error) => Err(error),
     }
 }
-
-
-// #[utoipa::path(
-//     post,
-//     path = "/api/v1/users",
-//     tag = API_TAG,
-
-//     request_body = CreateUserDto
-// )]
-// pub async fn create_user(State(state): State<Arc<AppState>>, Json(body): Json<CreateUserDto>) -> Result<Json<FilteredUser>, ApiError> {
-//     match service::create_user(&state.db, body).await {
-//         Ok(user) => Ok(Json(filter_user(&user))),
-//         Err(err) => Err(err)
-//     }
-// }

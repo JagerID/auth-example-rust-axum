@@ -17,7 +17,7 @@ async fn get_users_test() {
 
     let server = TestServer::new(app).unwrap();
 
-    let response = server.get("/api/v1/users").await;
+    let response = server.get("/api/users").await;
 
     assert_eq!(response.text(), "[]");
 }

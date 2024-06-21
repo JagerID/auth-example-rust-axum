@@ -7,12 +7,14 @@ pub enum ApiError {
 
     // ---------------- Commkon Api Errors ----------------
     NotFound,
+    ValidationError,
     BodyParsingError(String),
 
     // ---------------- Users Errors ----------------
     UserNotFound,
     UserAlreadyExists,
     Unauthorized,
+    InvalidCredentials,
 }
 
 impl IntoResponse for ApiError {
@@ -26,6 +28,8 @@ impl IntoResponse for ApiError {
             Self::UserNotFound => (StatusCode::NOT_FOUND, "User not found".to_owned()),
             Self::UserAlreadyExists => (StatusCode::CONFLICT, "User already exists".to_owned()),
             Self::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_owned()),
+            Self::ValidationError => (StatusCode::BAD_REQUEST, "Validation error".to_owned()),
+            Self::InvalidCredentials => (StatusCode::UNAUTHORIZED, "Invalid credentials".to_owned()),
 
             Self::BodyParsingError(string) => (StatusCode::BAD_REQUEST, string),
         };

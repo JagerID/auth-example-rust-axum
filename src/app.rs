@@ -5,7 +5,7 @@ use axum::{middleware, Router};
 use crate::{
     state::AppState,
     swagger::ApiDoc,
-    web::{guard::auth_guard, users::routes::users_routes},
+    web::{auth::routes::auth_routes, guard::auth_guard, users::routes::users_routes},
 };
 use utoipa::OpenApi;
 
@@ -14,10 +14,11 @@ pub async fn app(state: Arc<AppState>) -> Router {
         .url("/api-doc/openapi.json", ApiDoc::openapi());
 
     Router::new().merge(swagger).nest_service(
-        "/api/v1",
+        "/api",
         Router::new()
             .nest("/users", users_routes())
             .route_layer(middleware::from_fn(auth_guard))
+            .nest("/auth", auth_routes())
             .with_state(state),
     )
 }

@@ -1,6 +1,14 @@
 use crate::{db::postgres::PostgresPool, web::error::ApiError};
 
-use super::{dto::UpdateUserDto, model::User, repository};
+use super::{
+    dto::{CreateUserDto, UpdateUserDto},
+    model::User,
+    repository,
+};
+
+pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
+    repository::create_user(db, body).await
+}
 
 pub async fn get_users(db: &PostgresPool) -> Result<Vec<User>, ApiError> {
     repository::get_users(db).await

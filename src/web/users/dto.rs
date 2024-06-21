@@ -4,7 +4,7 @@ use sqlx::prelude::FromRow;
 use utoipa::ToSchema;
 use validator::Validate;
 
-#[derive(Debug, Serialize, Deserialize, ToSchema, FromRow, Validate)]
+#[derive(Debug, Deserialize, ToSchema, FromRow, Validate)]
 pub struct CreateUserDto {
     #[validate(email(message = "Incorrect email format"))]
     pub email: String,
