@@ -5,5 +5,6 @@ pub mod service;
 pub mod repository;
 pub mod dto;
 pub mod utils;
+pub mod extractor;
 
 mod test;
