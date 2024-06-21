@@ -12,6 +12,7 @@ pub enum ApiError {
     // ---------------- Users Errors ----------------
     UserNotFound,
     UserAlreadyExists,
+    Unauthorized,
 }
 
 impl IntoResponse for ApiError {
@@ -19,11 +20,13 @@ impl IntoResponse for ApiError {
         let (status_code, message) = match self {
             Self::InternalServerError => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                "Internal server error".to_string(),
+                "Internal server error".to_owned(),
             ),
-            Self::NotFound => (StatusCode::NOT_FOUND, "Not found".to_string()),
-            Self::UserNotFound => (StatusCode::NOT_FOUND, "User not found".to_string()),
-            Self::UserAlreadyExists => (StatusCode::CONFLICT, "User already exists".to_string()),
+            Self::NotFound => (StatusCode::NOT_FOUND, "Not found".to_owned()),
+            Self::UserNotFound => (StatusCode::NOT_FOUND, "User not found".to_owned()),
+            Self::UserAlreadyExists => (StatusCode::CONFLICT, "User already exists".to_owned()),
+            Self::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_owned()),
+
             Self::BodyParsingError(string) => (StatusCode::BAD_REQUEST, string),
         };
 

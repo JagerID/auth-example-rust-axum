@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
-use axum::Router;
+use axum::{middleware, Router};
 
-use crate::{state::AppState, swagger::ApiDoc, web::users::routes::users_routes};
+use crate::{
+    state::AppState,
+    swagger::ApiDoc,
+    web::{guard::auth_guard, users::routes::users_routes},
+};
 use utoipa::OpenApi;
 
 pub async fn app(state: Arc<AppState>) -> Router {
@@ -13,6 +17,7 @@ pub async fn app(state: Arc<AppState>) -> Router {
         "/api/v1",
         Router::new()
             .nest("/users", users_routes())
+            .route_layer(middleware::from_fn(auth_guard))
             .with_state(state),
     )
 }

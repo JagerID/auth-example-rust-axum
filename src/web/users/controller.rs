@@ -22,6 +22,10 @@ const API_TAG: &str = "Users";
         (status = 200, description = "Successfully getting user by id", body = FilteredUser),
         (status = 500, description = "Internal server error")
     ),
+    
+    security(
+        ("token" = [])
+    )
 )]
 pub async fn get_user_by_id(
     State(state): State<Arc<AppState>>, Path(id): Path<uuid::Uuid>
@@ -42,6 +46,10 @@ pub async fn get_user_by_id(
         (status = 200, description = "Successfully getting users", body = [FilteredUser]),
         (status = 500, description = "Internal server error")
     ),
+
+    security(
+        ("token" = [])
+    )
 )]
 pub async fn get_users(
     State(state): State<Arc<AppState>>,
@@ -69,6 +77,10 @@ pub async fn get_users(
         (status = 404, description = "users.user_not_found"),
         (status = 500, description = "app.internal_server_error")
     ),
+
+    security(
+        ("token" = [])
+    )
 )]
 pub async fn update_user(
     State(state): State<Arc<AppState>>,
