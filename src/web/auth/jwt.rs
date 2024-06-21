@@ -1,6 +1,5 @@
 use chrono::Duration;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-use tracing::info;
 
 use crate::web::auth::model::TokenClaims;
 

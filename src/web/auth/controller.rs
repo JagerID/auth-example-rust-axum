@@ -8,7 +8,6 @@ use crate::{
     web::{
         error::ApiError,
         users::{
-            self,
             dto::{CreateUserDto, FilteredUser},
             utils::filter_user,
         },
