@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{routing::post, Router};
+use axum::Router;
 
 use crate::state::AppState;
 
@@ -11,5 +11,4 @@ pub fn users_routes() -> Router<Arc<AppState>> {
     Router::new()
         .route("/", get(get_users))
         .route("/:id", get(get_user_by_id))
-    // .route("/", post(create_user))
 }

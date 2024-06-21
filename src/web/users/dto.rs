@@ -16,7 +16,7 @@ pub struct CreateUserDto {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, ToSchema, FromRow)]
 pub struct FilteredUser {
     pub id: uuid::Uuid,
     pub name: String,

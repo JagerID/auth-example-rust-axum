@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = { version = "0.7.5", features = ["macros"] }
+axum-test = "15.2.0"
 chrono = { version = "0.4.38", features = ["serde"] }
 dotenv = "0.15.0"
 envy = "0.4.2"

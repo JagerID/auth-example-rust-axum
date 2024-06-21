@@ -1,29 +1,29 @@
 use crate::{db::postgres::PostgresPool, web::error::ApiError};
 
-use super::{dto::CreateUserDto, model::User};
+use super::model::User;
 
-pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
-    sqlx::query_as!(
-        User,
-        r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
-        body.email.to_owned(),
-        body.name.to_owned(),
-        body.password.to_owned(),
-        "USER"
-    )
-    .fetch_one(db)
-    .await
-    .map_err(|e| match e {
-        sqlx::Error::Database(error) => {
-            if error.code().unwrap() == "23505" {
-                ApiError::UserAlreadyExists
-            } else {
-                ApiError::InternalServerError
-            }
-        }
-        _ => ApiError::InternalServerError,
-    })
-}
+// pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
+//     sqlx::query_as!(
+//         User,
+//         r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
+//         body.email.to_owned(),
+//         body.name.to_owned(),
+//         body.password.to_owned(),
+//         "USER"
+//     )
+//     .fetch_one(db)
+//     .await
+//     .map_err(|e| match e {
+//         sqlx::Error::Database(error) => {
+//             if error.code().unwrap() == "23505" {
+//                 ApiError::UserAlreadyExists
+//             } else {
+//                 ApiError::InternalServerError
+//             }
+//         }
+//         _ => ApiError::InternalServerError,
+//     })
+// }
 
 pub async fn get_users(db: &PostgresPool) -> Result<Vec<User>, ApiError> {
     sqlx::query_as("SELECT * FROM users")
