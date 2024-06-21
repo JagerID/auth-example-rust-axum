@@ -3,5 +3,5 @@ pub mod controller;
 pub mod dto;
 pub mod model;
 pub mod service;
-mod jwt;
+pub mod jwt;
 mod utils;

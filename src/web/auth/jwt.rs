@@ -22,8 +22,7 @@ pub fn generate_token(
         &Header::default(),
         &claims,
         &EncodingKey::from_secret(secret.as_ref()),
-    )
-    .unwrap();
+    )?;
 
     Ok(token)
 }
@@ -33,8 +32,7 @@ pub fn decode_token(token: &str, secret: &str) -> Result<TokenClaims, jsonwebtok
         token,
         &DecodingKey::from_secret(secret.as_bytes()),
         &Validation::default(),
-    )
-    .unwrap();
+    )?;
 
     let claims = token_data.claims;
 

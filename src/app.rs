@@ -17,7 +17,7 @@ pub async fn app(state: Arc<AppState>) -> Router {
         "/api",
         Router::new()
             .nest("/users", users_routes())
-            .route_layer(middleware::from_fn(auth_guard))
+            .route_layer(middleware::from_fn_with_state(state.clone(), auth_guard))
             .nest("/auth", auth_routes())
             .with_state(state),
     )
