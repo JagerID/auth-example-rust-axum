@@ -5,6 +5,10 @@ pub enum ApiError {
     // ---------------- Common Errors ----------------
     InternalServerError,
     NotFound,
+
+    // ---------------- Users Errors ----------------
+    UserNotFound,
+    UserAlreadyExists
 }
 
 impl IntoResponse for ApiError {
@@ -14,6 +18,8 @@ impl IntoResponse for ApiError {
                 (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
             }
             Self::NotFound => (StatusCode::NOT_FOUND, "Not found"),
+            Self::UserNotFound => (StatusCode::NOT_FOUND, "User not found"),
+            Self::UserAlreadyExists => (StatusCode::CONFLICT, "User already exists")
         };
 
         (status_code, Json(json!({ "message": message }))).into_response()

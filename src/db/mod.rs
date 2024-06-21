@@ -1,1 +1,3 @@
-pub mod scylla;
+pub mod postgres;
+
+pub struct Database;

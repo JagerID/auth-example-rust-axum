@@ -1,54 +1,74 @@
-use scylla::Session;
-
-use crate::web::error::ApiError;
+use crate::{db::postgres::PostgresPool, web::error::ApiError};
 
 use super::{dto::CreateUserDto, model::User};
-use tracing::{error, info};
 
-pub async fn get_user_by_id(db: &Session, id: uuid::Uuid) -> Result<User, ApiError> {
-    let result = db
-        .query("SELECT * FROM idk.users WHERE id = ?", (id,))
-        .await
-        .map_err(|e| {
-            error!("{}", e);
-            ApiError::InternalServerError
-        })?;
-
-    let iter = result.rows_typed::<User>().map_err(|e| {
-        error!("{}", e);
-        ApiError::InternalServerError
-    })?;
-
-    if let Some(user) = iter.last() {
-        Ok(user.unwrap())
-    } else {
-        Err(ApiError::NotFound)
-    }
-}
-
-pub async fn create_user(db: &Session, body: CreateUserDto) -> Result<User, ApiError> {
-    db.query(
-        "INSERT INTO idk.users (id, name, email) VALUES (uuid(), ?, ?)",
-        (body.name, body.email.to_string()),
+pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
+    sqlx::query_as!(
+        User,
+        r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
+        body.email.to_owned(),
+        body.name.to_owned(),
+        body.password.to_owned(),
+        "USER"
     )
+    .fetch_one(db)
     .await
-    .map_err(|e| {
-        error!("{}", e);
-        ApiError::InternalServerError
-    })?;
-
-    let result = db
-        .query("SELECT * FROM idk.users WHERE email = ?", (body.email,))
-        .await
-        .map_err(|e| {
-            error!("{}", e);
-            ApiError::InternalServerError
-        })?;
-
-    let user = result.first_row_typed::<User>().map_err(|e| {
-        error!("{}", e);
-        ApiError::InternalServerError
-    })?;
-
-    Ok(user)
+    .map_err(|e| match e {
+        sqlx::Error::Database(error) => {
+            if error.code().unwrap() == "23505" {
+                ApiError::UserAlreadyExists
+            } else {
+                ApiError::InternalServerError
+            }
+        }
+        _ => ApiError::InternalServerError,
+    })
 }
+
+pub async fn get_users(db: &PostgresPool) -> Result<Vec<User>, ApiError> {
+    sqlx::query_as("SELECT * FROM users")
+        .fetch_all(db)
+        .await
+        .map_err(|_| ApiError::InternalServerError)
+}
+
+pub async fn get_user_by_id(db: &PostgresPool, id: uuid::Uuid) -> Result<User, ApiError> {
+    sqlx::query_as!(User, "SELECT * FROM users WHERE id = $1", id)
+        .fetch_one(db)
+        .await
+        .map_err(|e| match e {
+            sqlx::Error::RowNotFound => ApiError::UserNotFound,
+            _ => ApiError::InternalServerError,
+        })
+}
+
+pub async fn get_user_by_email(db: &PostgresPool, email: String) -> Result<User, ApiError> {
+    sqlx::query_as!(User, "SELECT * FROM users WHERE email = $1", email)
+        .fetch_one(db)
+        .await
+        .map_err(|e| match e {
+            sqlx::Error::RowNotFound => ApiError::UserNotFound,
+            _ => ApiError::InternalServerError,
+        })
+}
+
+// pub async fn update_user(
+//     db: &PostgresPool,
+//     id: uuid::Uuid,
+//     body: UpdateUserDto,
+// ) -> Result<PgQueryResult, ApiError> {
+//     sqlx::query(r#"UPDATE users SET name = $1 WHERE id = $2"#)
+//         .bind(body.name.unwrap())
+//         .bind(id)
+//         .execute(db)
+//         .await
+//         .map_err(|_| ApiError::InternalServerError)
+// }
+
+// pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
+//     sqlx::query(r#"DELETE FROM users WHERE id = $1"#)
+//         .bind(id)
+//         .execute(db)
+//         .await
+//         .map_err(|_| ApiError::InternalServerError)
+// }
