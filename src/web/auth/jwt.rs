@@ -5,6 +5,7 @@ use crate::web::auth::model::TokenClaims;
 
 pub fn generate_token(
     user_id: uuid::Uuid,
+    role: &str,
     secret: &str,
     exp: &i64,
 ) -> Result<String, jsonwebtoken::errors::Error> {
@@ -14,6 +15,7 @@ pub fn generate_token(
 
     let claims = TokenClaims {
         sub: user_id,
+        role: role.to_string(),
         exp,
         iat,
     };

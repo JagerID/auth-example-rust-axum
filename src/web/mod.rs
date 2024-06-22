@@ -4,4 +4,4 @@ pub mod auth;
 
 pub mod guard;
 
-mod error;
+pub mod error;

@@ -4,6 +4,7 @@ use utoipa::ToSchema;
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct TokenClaims {
     pub sub: uuid::Uuid,
+    pub role: String,
     pub iat: usize,
     pub exp: usize,
 }

@@ -35,10 +35,20 @@ pub async fn login_user(state: &AppState, body: LoginUserDto) -> Result<TokensDt
         return Err(ApiError::InvalidCredentials);
     }
 
-    let token = generate_token(user.id, &state.env.jwt_secret, &state.env.jwt_token_exp)
-        .map_err(|_| ApiError::InternalServerError)?;
-    let refresh = generate_token(user.id, &state.env.jwt_secret, &state.env.jwt_refresh_exp)
-        .map_err(|_| ApiError::InternalServerError)?;
+    let token = generate_token(
+        user.id,
+        &user.role,
+        &state.env.jwt_secret,
+        &state.env.jwt_token_exp,
+    )
+    .map_err(|_| ApiError::InternalServerError)?;
+    let refresh = generate_token(
+        user.id,
+        &user.role,
+        &state.env.jwt_secret,
+        &state.env.jwt_refresh_exp,
+    )
+    .map_err(|_| ApiError::InternalServerError)?;
 
     Ok(TokensDto { token, refresh })
 }
@@ -47,10 +57,16 @@ pub async fn refresh_tokens(state: &AppState, body: RefreshDto) -> Result<Tokens
     let claims = decode_token(&body.refresh, &state.env.jwt_secret)
         .map_err(|_| ApiError::InternalServerError)?;
 
-    let token = generate_token(claims.sub, &state.env.jwt_secret, &state.env.jwt_token_exp)
-        .map_err(|_| ApiError::InternalServerError)?;
+    let token = generate_token(
+        claims.sub,
+        &claims.role,
+        &state.env.jwt_secret,
+        &state.env.jwt_token_exp,
+    )
+    .map_err(|_| ApiError::InternalServerError)?;
     let refresh = generate_token(
         claims.sub,
+        &claims.role,
         &state.env.jwt_secret,
         &state.env.jwt_refresh_exp,
     )
