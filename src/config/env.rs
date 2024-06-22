@@ -15,6 +15,8 @@ pub struct Env {
     pub jwt_secret: String,
     pub jwt_token_exp: i64,
     pub jwt_refresh_exp: i64,
+
+    pub media_path: String
 }
 
 pub fn load_env() -> Env {

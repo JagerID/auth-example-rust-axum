@@ -6,7 +6,6 @@ pub enum ApiError {
     InternalServerError,
 
     // ---------------- Commkon Api Errors ----------------
-    NotFound,
     ValidationError,
     BodyParsingError(String),
 
@@ -24,7 +23,6 @@ impl IntoResponse for ApiError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Internal server error".to_owned(),
             ),
-            Self::NotFound => (StatusCode::NOT_FOUND, "Not found".to_owned()),
             Self::UserNotFound => (StatusCode::NOT_FOUND, "User not found".to_owned()),
             Self::UserAlreadyExists => (StatusCode::CONFLICT, "User already exists".to_owned()),
             Self::Unauthorized => (StatusCode::UNAUTHORIZED, "Unauthorized".to_owned()),
