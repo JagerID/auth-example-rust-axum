@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum_extra::extract::Multipart;
 use tokio::{fs::File, io::AsyncWriteExt};
-use tracing::info;
+use tracing::{error, info};
 
 use crate::{state::AppState, web::error::ApiError};
 
@@ -20,29 +20,35 @@ pub async fn upload_photo(
         let name = field.name().unwrap().to_string();
 
         if &name == "photo" {
-            let content_type = &field.content_type().unwrap().to_string();
-            let data = field
-                .bytes()
-                .await
-                .map_err(|_| ApiError::InternalServerError)?;
+            let file_type = &field
+                .file_name()
+                .unwrap()
+                .split(".")
+                .last()
+                .unwrap()
+                .to_string();
+            let data = field.bytes().await.map_err(|e| {
+                error!("{}", e);
+                ApiError::InternalServerError
+            })?;
 
-            let path = format!(
-                "{}{}{}.{}",
-                &state.env.media_path,
-                "/profiles/",
-                user_id,
-                content_type.split("/").last().unwrap().to_string()
-            );
+            let file_name = format!("{}.{}", user_id, file_type);
 
-            let mut file = File::create(path.to_string())
-                .await
-                .map_err(|_| ApiError::InternalServerError)?;
+            info!("FILE TYPE: {}", file_name);
 
-            file.write(&data)
-                .await
-                .map_err(|_| ApiError::InternalServerError)?;
+            let path = format!("{}{}{}", &state.env.media_path, "/profiles/", file_name);
 
-            respository::upload_photo(&state.db, user_id, Some(path)).await?;
+            let mut file = File::create(path.to_string()).await.map_err(|e| {
+                error!("{}", e);
+                ApiError::InternalServerError
+            })?;
+
+            file.write(&data).await.map_err(|e| {
+                error!("{}", e);
+                ApiError::InternalServerError
+            })?;
+
+            respository::upload_photo(&state.db, user_id, Some(file_name)).await?;
         }
     }
 
