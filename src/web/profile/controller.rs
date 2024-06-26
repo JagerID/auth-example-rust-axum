@@ -30,23 +30,3 @@ pub async fn upload_photo(
 ) -> Result<(), ApiError> {
     service::upload_photo(&state, user_id, multipart).await
 }
-
-// #[utoipa::path(
-//     get,
-//     path = "/api/profile/photo",
-//     tag = API_TAG,
-
-//     request_body(content_type = "multipart/formdata", content = Multipart),
-
-//     security(
-//         ("token" = [])
-//     )
-// )]
-// pub async fn upload_photo(
-//     State(state): State<Arc<AppState>>,
-//     UserID(user_id): UserID,
-//     multipart: Multipart,
-// ) -> Result<(), ApiError> {
-//     service::upload_photo(&state, user_id, multipart).await
-// }
-
