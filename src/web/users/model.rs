@@ -19,6 +19,8 @@ pub struct User {
 
     pub role: String,
 
+    pub is_blocked: bool,
+
     pub photo: Option<String>,
 
     #[serde(rename = "createdAt")]

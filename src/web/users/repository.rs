@@ -10,11 +10,12 @@ use super::{
 pub async fn create_user(db: &PostgresPool, body: CreateUserDto) -> Result<User, ApiError> {
     sqlx::query_as!(
         User,
-        r#"INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4) RETURNING *"#,
+        r#"INSERT INTO users (email, name, password, role, is_blocked) VALUES ($1, $2, $3, $4, $5) RETURNING *"#,
         body.email.to_owned(),
         body.name.to_owned(),
         body.password.to_owned(),
-        "USER"
+        "USER",
+        false
     )
     .fetch_one(db)
     .await
@@ -64,14 +65,6 @@ pub async fn update_user(
 ) -> Result<PgQueryResult, ApiError> {
     sqlx::query(r#"UPDATE users SET name = $1 WHERE id = $2"#)
         .bind(body.name)
-        .bind(id)
-        .execute(db)
-        .await
-        .map_err(|_| ApiError::InternalServerError)
-}
-
-pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
-    sqlx::query(r#"DELETE FROM users WHERE id = $1"#)
         .bind(id)
         .execute(db)
         .await

@@ -16,6 +16,7 @@ pub enum ApiError {
     UserAlreadyExists,
     Unauthorized,
     InvalidCredentials,
+    Blocked,
 }
 
 impl IntoResponse for ApiError {
@@ -32,8 +33,9 @@ impl IntoResponse for ApiError {
             Self::ValidationError => (StatusCode::BAD_REQUEST, "Validation error".to_owned()),
             Self::InvalidCredentials => {
                 (StatusCode::UNAUTHORIZED, "Invalid credentials".to_owned())
-            },
+            }
             Self::Forbidden => (StatusCode::FORBIDDEN, "Forbidden".to_owned()),
+            Self::Blocked => (StatusCode::FORBIDDEN, "Account blocked".to_owned()),
 
             Self::BodyParsingError(string) => (StatusCode::BAD_REQUEST, string),
         };

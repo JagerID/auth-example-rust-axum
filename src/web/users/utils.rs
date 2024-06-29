@@ -9,6 +9,7 @@ pub fn filter_user(user: &User) -> FilteredUser {
         photo: user.photo.to_owned(),
         created_at: user.created_at.to_owned(),
         updated_at: user.updated_at.to_owned(),
+        is_blocked: user.is_blocked.to_owned(),
     }
 }
 

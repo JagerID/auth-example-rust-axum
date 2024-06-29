@@ -31,6 +31,7 @@ pub struct FilteredUser {
     pub email: String,
     pub role: String,
     pub photo: Option<String>,
+    pub is_blocked: bool,
 
     #[serde(rename = "createdAt")]
     pub created_at: Option<DateTime<Utc>>,

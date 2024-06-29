@@ -5,6 +5,8 @@ use utoipa::ToSchema;
 pub struct TokenClaims {
     pub sub: uuid::Uuid,
     pub role: String,
+    pub is_blocked: bool,
+    
     pub iat: usize,
     pub exp: usize,
 }

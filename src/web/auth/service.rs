@@ -38,6 +38,7 @@ pub async fn login_user(state: &AppState, body: LoginUserDto) -> Result<TokensDt
     let token = generate_token(
         user.id,
         &user.role,
+        user.is_blocked,
         &state.env.jwt_secret,
         &state.env.jwt_token_exp,
     )
@@ -45,6 +46,7 @@ pub async fn login_user(state: &AppState, body: LoginUserDto) -> Result<TokensDt
     let refresh = generate_token(
         user.id,
         &user.role,
+        user.is_blocked,
         &state.env.jwt_secret,
         &state.env.jwt_refresh_exp,
     )
@@ -60,6 +62,7 @@ pub async fn refresh_tokens(state: &AppState, body: RefreshDto) -> Result<Tokens
     let token = generate_token(
         claims.sub,
         &claims.role,
+        claims.is_blocked,
         &state.env.jwt_secret,
         &state.env.jwt_token_exp,
     )
@@ -67,6 +70,7 @@ pub async fn refresh_tokens(state: &AppState, body: RefreshDto) -> Result<Tokens
     let refresh = generate_token(
         claims.sub,
         &claims.role,
+        claims.is_blocked,
         &state.env.jwt_secret,
         &state.env.jwt_refresh_exp,
     )
