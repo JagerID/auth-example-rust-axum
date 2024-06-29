@@ -5,7 +5,7 @@ use axum_extra::extract::Multipart;
 
 use crate::{
     state::AppState,
-    web::{error::ApiError, users::extractor::UserID},
+    web::{error::ApiError, extractors::UserID},
 };
 
 use super::service;

@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   postgres:
+    container_name: idk_postgres
     image: postgis/postgis
-    # containter_name: geo-postgres
     restart: always
     env_file:
       - .env
@@ -12,6 +12,16 @@ services:
     volumes:
       - ~/geo-volumes/postgresql:/var/lib/posgresql/data
 
-volumes:
-  postgres:
-    driver: local
+  # backend:
+  #   container_name: idk_backend
+  #   depends_on:
+  #     - postgres
+  #   build: .
+  #   ports:
+  #     - "${PORT}:8000"
+  #   restart: always
+
+# volumes:
+#   postgres:
+#     driver: localversion: "3.8"
+

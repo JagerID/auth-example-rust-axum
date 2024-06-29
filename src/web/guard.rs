@@ -31,8 +31,6 @@ pub async fn auth_guard(
         })
         .ok_or_else(|| ApiError::Unauthorized)?;
 
-    info!("TOKEN: {}", token);
-
     decode_token(&token, &state.env.jwt_secret).map_err(|_| ApiError::Unauthorized)?;
 
     Ok(next.run(req).await)

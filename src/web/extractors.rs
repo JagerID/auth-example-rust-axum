@@ -5,10 +5,14 @@ use axum_extra::{
     headers::{authorization::Bearer, Authorization},
     TypedHeader,
 };
+use tracing::info;
 
 use crate::{
     state::AppState,
-    web::{auth::jwt::decode_token, error::ApiError},
+    web::{
+        auth::{jwt::decode_token, model::TokenClaims},
+        error::ApiError,
+    },
 };
 
 pub struct UserID(pub uuid::Uuid);

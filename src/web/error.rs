@@ -5,6 +5,7 @@ pub enum ApiError {
     // ---------------- Server Errors ----------------
     InternalServerError,
     NotFound,
+    Forbidden,
 
     // ---------------- Commkon Api Errors ----------------
     ValidationError,
@@ -31,7 +32,8 @@ impl IntoResponse for ApiError {
             Self::ValidationError => (StatusCode::BAD_REQUEST, "Validation error".to_owned()),
             Self::InvalidCredentials => {
                 (StatusCode::UNAUTHORIZED, "Invalid credentials".to_owned())
-            }
+            },
+            Self::Forbidden => (StatusCode::FORBIDDEN, "Forbidden".to_owned()),
 
             Self::BodyParsingError(string) => (StatusCode::BAD_REQUEST, string),
         };

@@ -70,10 +70,10 @@ pub async fn update_user(
         .map_err(|_| ApiError::InternalServerError)
 }
 
-// pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
-//     sqlx::query(r#"DELETE FROM users WHERE id = $1"#)
-//         .bind(id)
-//         .execute(db)
-//         .await
-//         .map_err(|_| ApiError::InternalServerError)
-// }
+pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
+    sqlx::query(r#"DELETE FROM users WHERE id = $1"#)
+        .bind(id)
+        .execute(db)
+        .await
+        .map_err(|_| ApiError::InternalServerError)
+}
