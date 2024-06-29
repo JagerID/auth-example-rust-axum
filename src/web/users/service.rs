@@ -31,3 +31,13 @@ pub async fn update_user(
 
     repository::get_user_by_id(db, id).await
 }
+
+pub async fn delete_user(db: &PostgresPool, id: uuid::Uuid) -> Result<(), ApiError> {
+    let delete_result = repository::delete_user(db, id).await?;
+
+    if delete_result.rows_affected() == 0 {
+        return Err(ApiError::UserNotFound);
+    }
+
+    Ok(())
+}

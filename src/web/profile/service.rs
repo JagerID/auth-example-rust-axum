@@ -4,7 +4,7 @@ use axum_extra::extract::Multipart;
 use tokio::{fs::File, io::AsyncWriteExt};
 use tracing::{error, info};
 
-use crate::{state::AppState, web::error::ApiError};
+use crate::{db::postgres::PostgresPool, state::AppState, web::{error::ApiError, users::model::User}};
 
 use super::respository;
 
@@ -53,4 +53,11 @@ pub async fn upload_photo(
     }
 
     Ok(())
+}
+
+pub async fn get_profile(
+    db: &PostgresPool,
+    user_id: uuid::Uuid
+) -> Result<User, ApiError> {
+    respository::get_profile(db, user_id).await
 }

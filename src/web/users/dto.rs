@@ -20,8 +20,6 @@ pub struct CreateUserDto {
 pub struct UpdateUserDto {
     #[validate(length(min = 1, message = "Name required"))]
     pub name: String,
-
-    pub role: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]

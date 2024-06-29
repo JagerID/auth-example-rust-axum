@@ -8,6 +8,7 @@ use crate::{state::AppState, web::error::ApiError};
 use super::{dto::{FilteredUser, UpdateUserDto}, service, utils::{filter_user, filter_users}};
 
 const API_TAG: &str = "Users";
+const ADMIN_API_TAG: &str = "Admin";
 
 #[utoipa::path(
     get,
@@ -28,7 +29,8 @@ const API_TAG: &str = "Users";
     )
 )]
 pub async fn get_user_by_id(
-    State(state): State<Arc<AppState>>, Path(id): Path<uuid::Uuid>
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<uuid::Uuid>
 ) -> Result<Json<FilteredUser>, ApiError> {
     match service::get_user_by_id(&state.db, id).await {
         Ok(user) => Ok(Json(filter_user(&user))),
@@ -40,7 +42,7 @@ pub async fn get_user_by_id(
 #[utoipa::path(
     get,
     path = "/api/users",
-    tag = API_TAG,
+    tag = ADMIN_API_TAG,
 
     responses(
         (status = 200, description = "Successfully getting users", body = [FilteredUser]),
@@ -95,5 +97,28 @@ pub async fn update_user(
     match service::update_user(&state.db, id, body).await {
         Ok(updated_user) => Ok(Json(filter_user(&updated_user))),
         Err(error) => Err(error),
+    }
+}
+
+#[utoipa::path(
+    delete,
+    path = "/api/users/{id}",
+    tag = ADMIN_API_TAG,
+
+    params(
+        ("id" = uuid::Uuid, Path, description = "User id")
+    ),
+
+    security(
+        ("token" = [])
+    )
+)]
+pub async fn delete_user(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<uuid::Uuid>
+) -> Result<(), ApiError> {
+    match service::delete_user(&state.db, id).await {
+        Ok(()) => Ok(()),
+        Err(error) => Err(error)
     }
 }
