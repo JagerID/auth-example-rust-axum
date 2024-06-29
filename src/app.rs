@@ -8,11 +8,7 @@ use crate::{
     state::AppState,
     swagger::ApiDoc,
     web::{
-        auth::routes::auth_routes,
-        error::handle_404,
-        guard::{auth_guard, blocked_guard},
-        profile::routes::profile_routes,
-        users::routes::users_routes,
+        auth::routes::auth_routes, error::handle_404, guard::{auth_guard, blocked_guard}, profile::routes::profile_routes, stats::routes::stats_routes, users::routes::users_routes
     },
 };
 use utoipa::OpenApi;
@@ -32,6 +28,7 @@ pub async fn app(state: Arc<AppState>) -> Router {
         Router::new()
             .nest("/users", users_routes(state.clone()))
             .nest("/profile", profile_routes())
+            .nest("/stats", stats_routes())
             // .nest("/admin", admin_routes(state.clone()))
             .route_layer(middleware::from_fn_with_state(state.clone(), auth_guard))
             .route_layer(middleware::from_fn_with_state(state.clone(), blocked_guard))
