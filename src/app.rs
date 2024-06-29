@@ -26,10 +26,9 @@ pub async fn app(state: Arc<AppState>) -> Router {
     Router::new().merge(swagger).nest_service(
         "/api",
         Router::new()
-            .nest("/users", users_routes(state.clone()))
+            .nest("/users", users_routes(&state))
             .nest("/profile", profile_routes())
             .nest("/stats", stats_routes())
-            // .nest("/admin", admin_routes(state.clone()))
             .route_layer(middleware::from_fn_with_state(state.clone(), auth_guard))
             .route_layer(middleware::from_fn_with_state(state.clone(), blocked_guard))
             .nest("/auth", auth_routes())

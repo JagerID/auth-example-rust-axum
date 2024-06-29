@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use tracing::error;
+use tracing::{error, info};
 
 fn default_port() -> u16 {
     8000
@@ -16,14 +16,17 @@ pub struct Env {
     pub jwt_token_exp: i64,
     pub jwt_refresh_exp: i64,
 
-    pub media_path: String
+    pub media_path: String,
 }
 
 pub fn load_env() -> Env {
     dotenv::dotenv().ok();
 
     match envy::from_env::<Env>() {
-        Ok(env) => env,
+        Ok(env) => {
+            info!("✅ Loaded environments");
+            env
+        }
         Err(error) => {
             error!("{:#?}", error);
             std::process::exit(1);
