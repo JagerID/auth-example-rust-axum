@@ -1,5 +1,3 @@
-use tracing::info;
-// TODO: Change utoipa to poem
 use utoipa::{
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
     Modify, OpenApi,
