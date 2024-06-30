@@ -31,3 +31,10 @@ pub async fn get_private_projects_count(db: &PostgresPool) -> Result<i64, ApiErr
         .await
         .map_err(|_| ApiError::InternalServerError)
 }
+
+pub async fn get_unique_project_owners_count(db: &PostgresPool) -> Result<i64, ApiError> {
+    sqlx::query_scalar("SELECT COUNT(DISTINCT user_id) FROM projects")
+        .fetch_one(db)
+        .await
+        .map_err(|_| ApiError::InternalServerError)
+}
