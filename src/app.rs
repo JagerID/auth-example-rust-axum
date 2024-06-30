@@ -6,12 +6,13 @@ use utoipa_swagger_ui::{Config, Url};
 use crate::{
     config::cors::init_cors_layer,
     state::AppState,
-    swagger::{ApiDocAuth, ApiDocUsers, ApiDocStats},
+    swagger::{ApiDocAuth, ApiDocProjects, ApiDocStats, ApiDocUsers},
     web::{
         auth::routes::auth_routes,
         error::handle_404,
         guard::{auth_guard, blocked_guard},
         profile::routes::profile_routes,
+        projects::routes::projects_routes,
         stats::routes::stats_routes,
         users::routes::users_routes,
     },
@@ -30,9 +31,13 @@ pub async fn app(state: Arc<AppState>) -> Router {
                 ApiDocUsers::openapi(),
             ),
             (
+                Url::new("Projects", "/api-docs/openapi-projects.json"),
+                ApiDocProjects::openapi(),
+            ),
+            (
                 Url::new("Stats", "/api-docs/openapi-stats.json"),
                 ApiDocStats::openapi(),
-            )
+            ),
         ])
         .config(
             Config::default()
@@ -45,6 +50,7 @@ pub async fn app(state: Arc<AppState>) -> Router {
         Router::new()
             .nest("/users", users_routes(&state))
             .nest("/profile", profile_routes())
+            .nest("/projects", projects_routes())
             .nest("/stats", stats_routes())
             .route_layer(middleware::from_fn_with_state(state.clone(), auth_guard))
             .route_layer(middleware::from_fn_with_state(state.clone(), blocked_guard))

@@ -40,6 +40,16 @@ pub struct ApiDocAuth;
 )]
 pub struct ApiDocStats;
 
+#[utoipauto(paths = "./src/web/projects")]
+#[derive(OpenApi)]
+#[openapi(
+    tags(
+        (name = "IDK Backend (projects part)")
+    ),
+    modifiers(&SecurityAddon)
+)]
+pub struct ApiDocProjects;
+
 struct SecurityAddon;
 
 impl Modify for SecurityAddon {

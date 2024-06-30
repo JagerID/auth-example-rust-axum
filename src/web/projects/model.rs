@@ -1,28 +1,22 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use utoipa::ToSchema;
 
-#[derive(Debug, ToSchema, Serialize, FromRow)]
-pub struct User {
+#[derive(Debug, Serialize, Deserialize, ToSchema, FromRow)]
+pub struct Project {
     pub id: uuid::Uuid,
-
-    pub email: String,
 
     pub name: String,
 
-    pub password: String,
-
-    pub role: String,
-
-    #[serde(rename = "isBlocked")]
-    pub is_blocked: bool,
-
-    pub photo: Option<String>,
+    #[serde(rename = "isPublic")]
+    pub is_public: bool,
 
     #[serde(rename = "createdAt")]
     pub created_at: Option<DateTime<Utc>>,
 
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<DateTime<Utc>>,
+
+    pub user_id: uuid::Uuid,
 }

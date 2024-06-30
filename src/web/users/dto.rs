@@ -29,6 +29,8 @@ pub struct FilteredUser {
     pub email: String,
     pub role: String,
     pub photo: Option<String>,
+
+    #[serde(rename = "isBlocked")]
     pub is_blocked: bool,
 
     #[serde(rename = "createdAt")]

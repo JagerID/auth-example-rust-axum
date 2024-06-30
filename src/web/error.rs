@@ -5,11 +5,12 @@ pub enum ApiError {
     // ---------------- Server Errors ----------------
     InternalServerError,
     NotFound,
-    Forbidden,
 
     // ---------------- Commkon Api Errors ----------------
     ValidationError,
+    Forbidden,
     BodyParsingError(String),
+    Conflict(String),
 
     // ---------------- Users Errors ----------------
     UserNotFound,
@@ -17,6 +18,10 @@ pub enum ApiError {
     Unauthorized,
     InvalidCredentials,
     Blocked,
+
+    // ---------------- Projects Errors ----------------
+    ProjectNotFound,
+
 }
 
 impl IntoResponse for ApiError {
@@ -34,9 +39,13 @@ impl IntoResponse for ApiError {
             Self::InvalidCredentials => {
                 (StatusCode::UNAUTHORIZED, "Invalid credentials".to_owned())
             }
+
             Self::Forbidden => (StatusCode::FORBIDDEN, "Forbidden".to_owned()),
             Self::Blocked => (StatusCode::FORBIDDEN, "Account blocked".to_owned()),
 
+            Self::ProjectNotFound => (StatusCode::NOT_FOUND, "Project not found".to_owned()),
+            
+            Self::Conflict(string) => (StatusCode::CONFLICT, string),
             Self::BodyParsingError(string) => (StatusCode::BAD_REQUEST, string),
         };
 
