@@ -13,6 +13,10 @@ const API_TAG: &str = "Stats";
     path = "/api/stats/users",
     tag = API_TAG,
 
+    responses(
+        (status = 200, description = "Successfully getting users stats", body = UsersStat)
+    ),
+
     security(
         ("token" = [])
     )

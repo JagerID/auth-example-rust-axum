@@ -6,7 +6,7 @@ use utoipa_swagger_ui::{Config, Url};
 use crate::{
     config::cors::init_cors_layer,
     state::AppState,
-    swagger::{ApiDocAuth, ApiDocUsers},
+    swagger::{ApiDocAuth, ApiDocUsers, ApiDocStats},
     web::{
         auth::routes::auth_routes,
         error::handle_404,
@@ -20,7 +20,6 @@ use utoipa::OpenApi;
 
 pub async fn app(state: Arc<AppState>) -> Router {
     let swagger = utoipa_swagger_ui::SwaggerUi::new("/swagger")
-        // .url("/api-doc/openapi.json", ApiDoc::openapi())
         .urls(vec![
             (
                 Url::with_primary("Auth", "/api-docs/openapi-auth.json", true),
@@ -30,6 +29,10 @@ pub async fn app(state: Arc<AppState>) -> Router {
                 Url::new("Users", "/api-docs/openapi-users.json"),
                 ApiDocUsers::openapi(),
             ),
+            (
+                Url::new("Stats", "/api-docs/openapi-stats.json"),
+                ApiDocStats::openapi(),
+            )
         ])
         .config(
             Config::default()

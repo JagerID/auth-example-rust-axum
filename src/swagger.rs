@@ -1,3 +1,4 @@
+use tracing::info;
 // TODO: Change utoipa to poem
 use utoipa::{
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
@@ -24,6 +25,16 @@ pub struct ApiDocUsers;
     modifiers(&SecurityAddon)
 )]
 pub struct ApiDocAuth;
+
+#[utoipauto(paths = "./src/web/stats")]
+#[derive(OpenApi)]
+#[openapi(
+    tags(
+        (name = "IDK Backend (stats part)")
+    ),
+    modifiers(&SecurityAddon)
+)]
+pub struct ApiDocStats;
 
 struct SecurityAddon;
 
