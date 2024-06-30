@@ -7,6 +7,8 @@ pub type PostgresPool = Pool<Postgres>;
 
 impl Database {
     pub async fn connect_to_postgres(database_url: &str) -> PostgresPool {
+        info!("⏱️ Connecting to database (Postgres)...");
+
         match PgPoolOptions::new()
             .max_connections(5)
             .connect(&database_url)

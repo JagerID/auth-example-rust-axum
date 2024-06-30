@@ -9,6 +9,7 @@ axum = { version = "0.7.5", features = ["macros"] }
 axum-extra = { version = "0.9.3", features = ["typed-header", "multipart"] }
 axum-test = "15.2.0"
 chrono = { version = "0.4.38", features = ["serde"] }
+content-types = "1.0.1"
 dotenv = "0.15.0"
 envy = "0.4.2"
 jsonwebtoken = "9.3.0"
