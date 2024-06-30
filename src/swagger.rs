@@ -5,15 +5,25 @@ use utoipa::{
 };
 use utoipauto::utoipauto;
 
-#[utoipauto(paths = "./src/web")]
+#[utoipauto(paths = "./src/web/users, ./src/web/profile")]
 #[derive(OpenApi)]
 #[openapi(
     tags(
-        (name = "IDK Backend")
+        (name = "IDK Backend (users part)")
     ),
     modifiers(&SecurityAddon)
 )]
-pub struct ApiDoc;
+pub struct ApiDocUsers;
+
+#[utoipauto(paths = "./src/web/auth")]
+#[derive(OpenApi)]
+#[openapi(
+    tags(
+        (name = "IDK Backend (auth part)")
+    ),
+    modifiers(&SecurityAddon)
+)]
+pub struct ApiDocAuth;
 
 struct SecurityAddon;
 

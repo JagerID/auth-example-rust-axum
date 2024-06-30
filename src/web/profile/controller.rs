@@ -21,7 +21,7 @@ const API_TAG: &str = "Profile";
     path = "/api/profile/upload-photo",
     tag = API_TAG,
 
-    request_body(content_type = "multipart/formdata", content = Multipart),
+    request_body(content_type = "multipart/formdata", content = UploadPhoto),
 
     security(
         ("token" = [])

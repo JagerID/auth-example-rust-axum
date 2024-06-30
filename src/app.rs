@@ -1,21 +1,36 @@
 use std::sync::Arc;
 
 use axum::{middleware, Router};
-use utoipa_swagger_ui::Config;
+use utoipa_swagger_ui::{Config, Url};
 
 use crate::{
     config::cors::init_cors_layer,
     state::AppState,
-    swagger::ApiDoc,
+    swagger::{ApiDocAuth, ApiDocUsers},
     web::{
-        auth::routes::auth_routes, error::handle_404, guard::{auth_guard, blocked_guard}, profile::routes::profile_routes, stats::routes::stats_routes, users::routes::users_routes
+        auth::routes::auth_routes,
+        error::handle_404,
+        guard::{auth_guard, blocked_guard},
+        profile::routes::profile_routes,
+        stats::routes::stats_routes,
+        users::routes::users_routes,
     },
 };
 use utoipa::OpenApi;
 
 pub async fn app(state: Arc<AppState>) -> Router {
     let swagger = utoipa_swagger_ui::SwaggerUi::new("/swagger")
-        .url("/api-doc/openapi.json", ApiDoc::openapi())
+        // .url("/api-doc/openapi.json", ApiDoc::openapi())
+        .urls(vec![
+            (
+                Url::with_primary("Auth", "/api-docs/openapi-auth.json", true),
+                ApiDocAuth::openapi(),
+            ),
+            (
+                Url::new("Users", "/api-docs/openapi-users.json"),
+                ApiDocUsers::openapi(),
+            ),
+        ])
         .config(
             Config::default()
                 .filter(true)
