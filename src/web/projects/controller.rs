@@ -53,6 +53,29 @@ pub async fn create_project(
 
 #[utoipa::path(
     get,
+    path = "/api/projects",
+    tag = API_TAG,
+
+    responses(
+        (status = 200, description = "Successfully getting projects", body = [FilteredProject])
+    ),
+
+    security(
+        ("token" = [])
+    )
+)]
+pub async fn get_projects(
+    UserID(user_id): UserID,
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Vec<FilteredProject>>, ApiError> {
+    match service::get_projects(&state.db, user_id).await {
+        Ok(projects) => Ok(Json(filter_projects(&projects))),
+        Err(error) => Err(error),
+    }
+}
+
+#[utoipa::path(
+    get,
     path = "/api/projects/{id}",
     tag = API_TAG,
 
@@ -76,24 +99,25 @@ pub async fn get_project_by_id(
 }
 
 #[utoipa::path(
-    get,
-    path = "/api/projects",
+    delete,
+    path = "/api/projects/{id}",
     tag = API_TAG,
 
     responses(
-        (status = 200, description = "Successfully getting projects", body = [FilteredProject])
+        (status = 200, description = "Successfully delete project")
     ),
 
     security(
         ("token" = [])
     )
 )]
-pub async fn get_projects(
+pub async fn delete_project(
     UserID(user_id): UserID,
     State(state): State<Arc<AppState>>,
-) -> Result<Json<Vec<FilteredProject>>, ApiError> {
-    match service::get_projects(&state.db, user_id).await {
-        Ok(projects) => Ok(Json(filter_projects(&projects))),
+    Path(id): Path<uuid::Uuid>,
+) -> Result<(), ApiError> {
+    match service::delete_project(&state.db, id, user_id).await {
+        Ok(_) => Ok(()),
         Err(error) => Err(error),
     }
 }

@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use axum::{middleware, routing::{delete, patch}, Router};
+use axum::{
+    middleware,
+    routing::{delete, patch},
+    Router,
+};
 
 use crate::{state::AppState, web::permissions::IsAdmin};
 
@@ -15,6 +19,5 @@ pub fn users_routes(state: &Arc<AppState>) -> Router<Arc<AppState>> {
             IsAdmin,
             Arc<AppState>,
         >(state.clone()))
-        .route("/:id", get(get_user_by_id))
-        .route("/:id", patch(update_user))
+        .route("/:id", get(get_user_by_id).patch(update_user))
 }

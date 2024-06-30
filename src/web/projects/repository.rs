@@ -1,3 +1,5 @@
+use sqlx::postgres::PgQueryResult;
+
 use crate::{db::postgres::PostgresPool, web::error::ApiError};
 
 use super::{dto::CreateProjectDto, model::Project};
@@ -41,6 +43,14 @@ pub async fn get_projects(
     sqlx::query_as("SELECT * FROM projects WHERE user_id = $1")
         .bind(user_id)
         .fetch_all(db)
+        .await
+        .map_err(|_| ApiError::InternalServerError)
+}
+
+pub async fn delete_project(db: &PostgresPool, id: uuid::Uuid) -> Result<PgQueryResult, ApiError> {
+    sqlx::query(r#"DELETE FROM projects WHERE id = $1"#)
+        .bind(id)
+        .execute(db)
         .await
         .map_err(|_| ApiError::InternalServerError)
 }
