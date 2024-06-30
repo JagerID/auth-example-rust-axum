@@ -20,6 +20,12 @@ pub struct ApiDocUsers;
     tags(
         (name = "IDK Backend (auth part)")
     ),
+    components(
+        schemas(
+            crate::web::users::dto::FilteredUser,
+            crate::web::users::dto::CreateUserDto
+        )
+    )
     modifiers(&SecurityAddon)
 )]
 pub struct ApiDocAuth;

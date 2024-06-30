@@ -36,7 +36,6 @@ pub async fn app(state: Arc<AppState>) -> Router {
         ])
         .config(
             Config::default()
-                .filter(true)
                 .display_request_duration(true)
                 .persist_authorization(true),
         );
