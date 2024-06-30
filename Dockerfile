@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN cargo install sqlx-cli
+COPY /home/jager/.cargo/bin/sqlx sqlx-cli
 RUN sqlx migrate run
 
 RUN cargo build --release
