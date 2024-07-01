@@ -7,6 +7,21 @@ use validator::Validate;
 pub struct CreateProjectDto {
     #[validate(length(min = 1, message = "Name required"))]
     pub name: String,
+
+    #[serde(rename = "isPublic")]
+    pub is_public: bool,
+}
+
+#[derive(Debug, Deserialize, Validate, ToSchema)]
+pub struct UpdateProjectDto {
+    #[validate(length(min = 1, message = "Name required"))]
+    pub name: String,
+
+    #[validate(length(min = 1, message = "Name required"), email)]
+    pub subname: String,
+
+    #[serde(rename = "isPublic")]
+    pub is_public: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema)]

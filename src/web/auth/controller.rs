@@ -39,7 +39,7 @@ pub async fn register_user(
 ) -> Result<Json<FilteredUser>, ApiError> {
     match body.validate() {
         Ok(_) => (),
-        Err(_) => return Err(ApiError::ValidationError),
+        Err(error) => return Err(ApiError::ValidationError(error)),
     };
 
     match service::register_user(&state.db, body).await {
@@ -66,7 +66,7 @@ pub async fn login_user(
 ) -> Result<Json<TokensDto>, ApiError> {
     match body.validate() {
         Ok(_) => (),
-        Err(_) => return Err(ApiError::ValidationError),
+        Err(errors) => return Err(ApiError::ValidationError(errors)),
     };
 
     match service::login_user(&state, body).await {
@@ -93,7 +93,7 @@ pub async fn refresh_tokens(
 ) -> Result<Json<TokensDto>, ApiError> {
     match body.validate() {
         Ok(_) => (),
-        Err(_) => return Err(ApiError::ValidationError),
+        Err(errors) => return Err(ApiError::ValidationError(errors)),
     };
 
     match service::refresh_tokens(&state, body).await {

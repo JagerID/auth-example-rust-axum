@@ -12,7 +12,7 @@ use crate::{
 };
 
 use super::{
-    dto::{CreateProjectDto, FilteredProject},
+    dto::{CreateProjectDto, FilteredProject, UpdateProjectDto},
     service,
     utils::{filter_project, filter_projects},
 };
@@ -42,7 +42,7 @@ pub async fn create_project(
 ) -> Result<Json<FilteredProject>, ApiError> {
     match body.validate() {
         Ok(_) => (),
-        Err(_) => return Err(ApiError::ValidationError),
+        Err(errors) => return Err(ApiError::ValidationError(errors)),
     };
 
     match service::create_project(&state.db, body, user_id).await {
@@ -57,7 +57,7 @@ pub async fn create_project(
     tag = API_TAG,
 
     responses(
-        (status = 200, description = "Successfully getting projects", body = [FilteredProject])
+        (status = 200, description = "Successfully getted projects", body = [FilteredProject])
     ),
 
     security(
@@ -80,7 +80,7 @@ pub async fn get_projects(
     tag = API_TAG,
 
     responses(
-        (status = 200, description = "Successfully getting project", body = FilteredProject)
+        (status = 200, description = "Successfully getted project", body = FilteredProject)
     ),
 
     security(
@@ -99,12 +99,42 @@ pub async fn get_project_by_id(
 }
 
 #[utoipa::path(
+    patch,
+    path = "/api/projects/{id}",
+    tag = API_TAG,
+
+    responses(
+        (status = 200, description = "Successfully updated project", body = FilteredProject)
+    ),
+
+    security(
+        ("token" = [])
+    )
+)]
+pub async fn update_project(
+    UserID(user_id): UserID,
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<uuid::Uuid>,
+    Json(body): Json<UpdateProjectDto>,
+) -> Result<Json<FilteredProject>, ApiError> {
+    match body.validate() {
+        Ok(_) => (),
+        Err(errors) => return Err(ApiError::ValidationError(errors)),
+    };
+
+    match service::update_project(&state.db, id, user_id, body).await {
+        Ok(project) => Ok(Json(filter_project(&project))),
+        Err(error) => Err(error),
+    }
+}
+
+#[utoipa::path(
     delete,
     path = "/api/projects/{id}",
     tag = API_TAG,
 
     responses(
-        (status = 200, description = "Successfully delete project")
+        (status = 200, description = "Successfully deleted project")
     ),
 
     security(
