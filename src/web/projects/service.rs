@@ -45,11 +45,17 @@ pub async fn update_project(
 ) -> Result<Project, ApiError> {
     let project = repository::get_project_by_id(db, id).await?;
 
-    // if let Some(is_public) = body.is_public {
-    //     info!("WITH PUBLIC: {:?}", is_public)
-    // } else {
-    //     body.is_public = Some(project.is_public)
-    // }
+    if let Some(is_public) = body.is_public {
+        info!("WITH PUBLIC: {:?}", is_public)
+    } else {
+        body.is_public = Some(project.is_public)
+    }
+
+    if let Some(name) = &body.name {
+        info!("NAME: {:?}", name)
+    } else {
+        body.name = Some(project.name)
+    }
 
     let update_result = repository::update_project(db, id, user_id, body).await?;
 

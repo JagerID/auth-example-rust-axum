@@ -15,13 +15,10 @@ pub struct CreateProjectDto {
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct UpdateProjectDto {
     #[validate(length(min = 1, message = "Name required"))]
-    pub name: String,
-
-    #[validate(length(min = 1, message = "Name required"), email)]
-    pub subname: String,
+    pub name: Option<String>,
 
     #[serde(rename = "isPublic")]
-    pub is_public: bool,
+    pub is_public: Option<bool>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]

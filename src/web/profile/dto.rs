@@ -1,4 +1,4 @@
-use utoipa::{openapi::schema, ToSchema};
+use utoipa::ToSchema;
 
 #[derive(Debug, ToSchema)]
 pub struct UploadPhoto {

@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde_json::json;
-use tracing::info;
 use validator::ValidationErrors;
 
 pub enum ApiError {
@@ -29,7 +28,7 @@ pub enum ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
-        let (status_code, message, details) = match self {
+        let (status_code, message, validation_errors) = match self {
             Self::InternalServerError => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Internal server error".to_owned(),
@@ -63,7 +62,7 @@ impl IntoResponse for ApiError {
 
         (
             status_code,
-            Json(json!({ "message": message, "details": details })),
+            Json(json!({ "message": message, "validation_errors": validation_errors })),
         )
             .into_response()
     }
@@ -73,10 +72,23 @@ pub async fn handle_404() -> impl IntoResponse {
     ApiError::NotFound
 }
 
-pub fn convert_validation_errors_to_json(validation_errors: ValidationErrors) {
-    // let mut errors = HashMap::new();
+pub fn convert_validation_errors_to_json(
+    validation_errors: ValidationErrors,
+) -> HashMap<String, Vec<String>> {
+    let mut errors = HashMap::new();
 
-    for (key, value) in validation_errors.field_errors().into_iter() {
-        info!("{} / {:#?}", key, value)
+    for (key, validation_error_values) in validation_errors.field_errors().into_iter() {
+        let error_key_messages: Vec<String> = validation_error_values
+            .iter()
+            .filter(|error_value| error_value.message.is_some())
+            .map(|error_value| match &error_value.message {
+                Some(message) => message.to_string(),
+                None => "".to_string(),
+            })
+            .collect();
+
+        errors.insert(key.to_owned(), error_key_messages);
     }
+
+    errors
 }
